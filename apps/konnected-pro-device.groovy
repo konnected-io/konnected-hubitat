@@ -13,7 +13,7 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  */
-public static String version() { return "2.2.6" }
+public static String version() { return "1.0.0" }
 
 definition(
   name:        "Konnected Pro Device",
