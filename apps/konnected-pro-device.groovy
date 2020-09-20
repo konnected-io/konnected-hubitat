@@ -295,7 +295,7 @@ def discoveryVerificationHandler(hubitat.device.HubResponse hubResponse) {
     log.debug "Verification Success: $body"
     device.name =  body?.device?.roomName?.text()
     device.model = body?.device?.modelName?.text()
-    device.serialNumber = body?.device?.serialNumber?.text().replaceAll('0x','')
+    device.serialNumber = body?.device?.serialNumber?.text().replaceAll('0x','').padLeft(12,'0')
     device.verified = true
   }
 }
@@ -306,13 +306,14 @@ def childDeviceConfiguration() {
   settings.each { name , value ->
     def nameValue = name.split("\\_")
     if (nameValue[0] == "deviceType") {
-      def deviceDNI = [ device.serialNumber, "${nameValue[1]}"].join('|')
-      def deviceLabel = settings."deviceLabel_${nameValue[1]}"
+      def zone = nameValue[1,-1].join('_')
+      def deviceDNI = [ device.serialNumber, zone].join('|')
+      def deviceLabel = settings."deviceLabel_${zone}"
       def deviceType = value
 
-	  // multiple ds18b20 sensors can be connected to one pin, so skip creating child devices here
+      // multiple ds18b20 sensors can be connected to one pin, so skip creating child devices here
       // child devices will be created later when they report state for the first time
-	  if (deviceType == "Konnected Temperature Probe (DS18B20)") { return }
+      if (deviceType == "Konnected Temperature Probe (DS18B20)") { return }
 
       def deviceChild = getChildDevice(deviceDNI)
       if (!deviceChild) {
@@ -326,10 +327,7 @@ def childDeviceConfiguration() {
 
         // Change Type, you will lose the history of events. delete and add back the child
         if (deviceChild.name != deviceType) {
-          
-			
-			
-			Device(deviceDNI)
+          deleteChildDevice(deviceDNI)
           if (deviceType != "") {
             addChildDevice("konnected-io", deviceType, deviceDNI, device.hub, [ "label": deviceLabel ? deviceLabel : deviceType , "completedSetup": true ])
           }
@@ -356,16 +354,16 @@ def childDeviceStateUpdate() {
   if (addr) { deviceId = "$deviceId|$addr" }
   def device = getChildDevice(deviceId)
   if (device) {
-  	if (request.JSON?.temp) {
-        log.debug "Temp: $request.JSON"
-    	device.updateStates(request.JSON)
+    if (request.JSON?.temp) {
+      log.debug "Temp: $request.JSON"
+      device.updateStates(request.JSON)
     } else {
-	    def newState = params.deviceState ?: request.JSON.state.toString()
+      def newState = params.deviceState ?: request.JSON.state.toString()
       log.debug "Received sensor update from Konnected device: $deviceId = $newState"
-	    device.setStatus(newState)
+      device.setStatus(newState)
     }
   } else {
-  	if (addr) {
+    if (addr) {
       // New device found at this address, create it
       log.debug "Adding new thing attached to Konnected: $deviceId"
       device = addChildDevice("konnected-io", settings."deviceType_$pin", deviceId, state.device.hub, [ "label": addr , "completedSetup": true ])
@@ -516,7 +514,7 @@ private Map sensorsMap() {
 
 private Map digitalSensorsMap() {
   return [
-	  "Konnected Temperature & Humidity Sensor (DHT)" : "Temperature & Humidity Sensor",
+    "Konnected Temperature & Humidity Sensor (DHT)" : "Temperature & Humidity Sensor",
     "Konnected Temperature Probe (DS18B20)" : "Temperature Probe(s)"
   ]
 }
