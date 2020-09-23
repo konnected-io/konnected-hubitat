@@ -306,7 +306,7 @@ def childDeviceConfiguration() {
   settings.each { name , value ->
     def nameValue = name.split("\\_")
     if (nameValue[0] == "deviceType") {
-      def zone = nameValue[1,-1].join('_')
+      def zone = nameValue[1..-1].join('_')
       def deviceDNI = [ device.serialNumber, zone].join('|')
       def deviceLabel = settings."deviceLabel_${zone}"
       def deviceType = value
