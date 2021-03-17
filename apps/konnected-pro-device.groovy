@@ -13,7 +13,7 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  */
-public static String version() { return "1.0.0" }
+public static String version() { return "1.0.1" }
 
 definition(
   name:        "Konnected Pro Device",
@@ -366,7 +366,7 @@ def childDeviceStateUpdate() {
     if (addr) {
       // New device found at this address, create it
       log.debug "Adding new thing attached to Konnected: $deviceId"
-      device = addChildDevice("konnected-io", settings."deviceType_$pin", deviceId, state.device.hub, [ "label": addr , "completedSetup": true ])
+      device = addChildDevice("konnected-io", settings."deviceType_$zone", deviceId, state.device.hub, [ "label": addr , "completedSetup": true ])
       device.updateStates(request.JSON)
     } else {
 	    log.warn "Device $deviceId not found!"
