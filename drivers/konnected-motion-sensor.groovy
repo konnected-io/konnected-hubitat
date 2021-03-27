@@ -24,6 +24,8 @@ metadata {
       options: ["Normally Closed", "Normally Open"],
       defaultValue: "Normally Closed",
       description: "Most motion sensors are Normally Closed (NC), meaning that the circuit opens when motion is detected. To reverse this logic, select Normally Open (NO)."
+      input name: "txtEnable", type: "bool", title: "Enable descriptionText logging", defaultValue: true
+      
   }
 
 }
@@ -40,5 +42,5 @@ def isOpen() {
 def setStatus(state) {
   def stateValue = state == "1" ? isOpen() : isClosed()
   sendEvent(name: "motion", value: stateValue)
-  log.info "$device.label is $stateValue"
+ if (txtEnable) log.info "$device.label is $stateValue"
 }

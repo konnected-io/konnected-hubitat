@@ -24,6 +24,7 @@ metadata {
 	    options: ["Normally Closed", "Normally Open"],
       defaultValue: "Normally Closed",
       description: "By default, the alarm state is triggered when the sensor circuit is open (NC). Select Normally Open (NO) when a closed circuit indicates an alarm."
+      input name: "txtEnable", type: "bool", title: "Enable descriptionText logging", defaultValue: true
   }
 
 }
@@ -40,5 +41,5 @@ def isOpen() {
 def setStatus(state) {
   def stateValue = state == "1" ? isOpen() : isClosed()
   sendEvent(name: "contact", value: stateValue)
-  log.info "$device.label is $stateValue"
+ if (txtEnable) log.info "$device.label is $stateValue"
 }
