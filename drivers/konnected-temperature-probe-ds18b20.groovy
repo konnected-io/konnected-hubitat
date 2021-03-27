@@ -18,6 +18,9 @@ metadata {
   definition (name: "Konnected Temperature Probe (DS18B20)", namespace: "konnected-io", author: "konnected.io", mnmn: "SmartThings", vid: "generic-humidity") {
     capability "Temperature Measurement"
   }
+    preferences {
+        input name: "txtEnable", type: "bool", title: "Enable descriptionText logging", defaultValue: true
+    }
 
 }
 
@@ -32,5 +35,5 @@ def updateStates(states) {
   	temperature = temperature * 9 / 5 + 32
   }
   sendEvent(name: "temperature", value: temperature.setScale(1, BigDecimal.ROUND_HALF_UP), unit: location.getTemperatureScale())
-  log.info "Temperature: $temperature"
+ if (txtEnable) log.info "Temperature: $temperature"
 }
