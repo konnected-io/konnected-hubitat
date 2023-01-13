@@ -20,12 +20,27 @@ metadata {
   }
 
   preferences {
-    input name: "normalState", type: "enum", title: "Normal State",
+    input (
+      name: "normalState", type: "enum", title: "Normal State",
       options: ["Normally Closed", "Normally Open"],
       defaultValue: "Normally Open",
       description: "Most door & window sensors are Normally Open (NO), meaning that the circuit closes when the door/window is closed. To reverse this logic, select Normally Closed (NC)."
+      )
+    input (
+      type: "bool",
+				name: "txtEnable",
+				title: "Enable descriptionText logging",
+				required: false,
+				defaultValue: false
+      )
   }
 
+}
+
+def logInfo(msg) {
+	if (txtEnable) {
+		log.info msg
+	}
 }
 
 def isClosed() {
@@ -40,5 +55,6 @@ def isOpen() {
 def setStatus(state) {
   def stateValue = state == "1" ? isOpen() : isClosed()
   sendEvent(name: "contact", value: stateValue)
-  log.info "$device.label is $stateValue"
+  def descriptionText = "$device.label is $stateValue"
+  logInfo descriptionText
 }
