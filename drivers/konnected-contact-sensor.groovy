@@ -28,10 +28,10 @@ metadata {
       )
     input (
       type: "bool",
-				name: "txtEnable",
-				title: "Enable descriptionText logging",
-				required: false,
-				defaultValue: false
+      name: "txtEnable",
+      title: "Enable descriptionText logging",
+      required: false,
+      defaultValue: false
       )
   }
 
