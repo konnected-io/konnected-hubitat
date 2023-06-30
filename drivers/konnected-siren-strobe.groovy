@@ -47,11 +47,13 @@ def updatePinState(Integer state) {
 def off() {
   def val = invertTrigger ? 1 : 0
   parent.deviceUpdateDeviceState(device.deviceNetworkId, val)
+  sendEvent(name: "switch", value: "off", displayed: true)
 }
 
 def on() {
   def val = invertTrigger ? 0 : 1
   parent.deviceUpdateDeviceState(device.deviceNetworkId, val)
+  sendEvent(name: "switch", value: "on", displayed: true)
 }
 
 def both() { on() }
