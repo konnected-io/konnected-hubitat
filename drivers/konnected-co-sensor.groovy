@@ -1,5 +1,5 @@
 /**
- *  Konnected CO Sensor
+ *  Konnected Contact Sensor
  *
  *  Copyright 2018 Konnected Inc (https://konnected.io)
  *
@@ -14,33 +14,32 @@
  *
  */
 metadata {
-  definition (name: "Konnected CO Sensor", namespace: "konnected-io", author: "konnected.io", mnmn: "SmartThings", vid: "generic-carbon-monoxide") {
-    capability "Smoke Detector"
-    capability "Carbon Monoxide Detector"
+  definition (name: "Konnected Contact Sensor", namespace: "konnected-io", author: "konnected.io", mnmn: "SmartThings", vid: "generic-contact") {
+    capability "Contact Sensor"
     capability "Sensor"
   }
 
   preferences {
     input name: "normalState", type: "enum", title: "Normal State",
-	    options: ["Normally Closed", "Normally Open"],
-      defaultValue: "Normally Closed",
-      description: "By default, the alarm state is triggered when the sensor circuit is open (NC). Select Normally Open (NO) when a closed circuit indicates an alarm."
+      options: ["Normally Closed", "Normally Open"],
+      defaultValue: "Normally Open",
+      description: "Most door & window sensors are Normally Open (NO), meaning that the circuit closes when the door/window is closed. To reverse this logic, select Normally Closed (NC)."
+      input name: "txtEnable", type: "bool", title: "Enable descriptionText logging", defaultValue: true
   }
 
 }
 
 def isClosed() {
-  normalState == "Normally Open" ? "detected" : "clear"
+  normalState == "Normally Closed" ? "open" : "closed"
 }
 
 def isOpen() {
-  normalState == "Normally Open" ? "clear" : "detected"
+  normalState == "Normally Closed" ? "closed" : "open"
 }
 
 // Update state sent from parent app
 def setStatus(state) {
   def stateValue = state == "1" ? isOpen() : isClosed()
-  sendEvent(name: "carbonMonoxide", value: stateValue)
-  log.info "$device.label is $stateValue"
+  sendEvent(name: "contact", value: stateValue)
+ if (txtEnable) log.info "$device.label is $stateValue"
 }
-
