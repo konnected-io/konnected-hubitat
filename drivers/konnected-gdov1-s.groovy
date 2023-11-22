@@ -139,6 +139,7 @@ public void off() {
 
 public void calibrate() {
   log.info "${device} calibrate"
+  espHomeCallService('calibrate_open_garage')
 }
 
 // the parse method is invoked by the API library when messages are received
