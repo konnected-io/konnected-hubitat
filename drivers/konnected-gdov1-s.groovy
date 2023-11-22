@@ -25,9 +25,9 @@
  */
 metadata {
     definition(
-        name: 'Konnected Garage Door',
+        name: 'Konnected Garage Door GDOv1-S',
         namespace: 'konnected',
-        author: 'Konnected Inc',
+        author: 'Konnected Inc.',
         singleThreaded: true,
         importUrl: 'https://github.com/konnected-io/konnected-hubitat/blob/master/drivers/konnected-gdov1-s.groovy') {
 

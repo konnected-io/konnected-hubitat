@@ -1,0 +1,4 @@
+konnected
+Garage Door Opener GDOv1-S
+library esphome.espHomeApiHelper.groovy
+driver konnected.KonnectedGarageDoorGDOv1S.groovy
