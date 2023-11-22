@@ -1,4 +1,13 @@
 {
   "author": "Konnected Inc.",
-  "gitHubUrl": "https://github.com/konnected-io/konnected-hubitat"
+  "gitHubUrl": "https://github.com/konnected-io/konnected-hubitat",
+  "packages": [
+    {
+      "id": "e10c4a5b-23c2-4941-9770-0dff27d73a50",
+      "name": "Garage Door Opener GDOv1-S",
+      "category": "Integrations",
+      "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/package-gdov1s.json",
+      "description": "Integrate the Konnected Garage Door Opener GDOv1-S"
+    }
+  ]
 }
