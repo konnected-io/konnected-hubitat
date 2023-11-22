@@ -17,7 +17,7 @@ jobs:
           mkdir GarageDoorOpenerGDOv1S
           cp bundles/gdov1-s.txt GarageDoorOpenerGDOv1S/install.txt
           cp bundles/gdov1-s.txt GarageDoorOpenerGDOv1S/update.txt
-          cp ./konnected-gdov1-s.groovy GarageDoorOpenerGDOv1S/konnected.KonnectedGarageDoorGDOv1S.groovy
+          cp drivers/konnected-gdov1-s.groovy GarageDoorOpenerGDOv1S/konnected.KonnectedGarageDoorGDOv1S.groovy
           wget -O GarageDoorOpenerGDOv1S/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/main/ESPHome/ESPHome-API-Library.groovy
 
       - name: Zip bundles
@@ -31,6 +31,6 @@ jobs:
         uses: Shopify/upload-to-release@v2.0.0
         with:
           name: GarageDoorOpenerGDOv1S.zip
-          path: GarageDoorOpenerGDOv1S
+          path: ./
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       
