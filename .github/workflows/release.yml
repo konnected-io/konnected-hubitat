@@ -24,13 +24,13 @@ jobs:
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
-          path: GarageDoorOpenerGDOv1S
+          directory: GarageDoorOpenerGDOv1S
           filename: GarageDoorOpenerGDOv1S.zip
 
       - name: Upload to Release
         uses: Shopify/upload-to-release@v2.0.0
         with:
           name: GarageDoorOpenerGDOv1S.zip
-          path: GarageDoorOpenerGDOv1S.zip
+          path: GarageDoorOpenerGDOv1S/GarageDoorOpenerGDOv1S.zip
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       
