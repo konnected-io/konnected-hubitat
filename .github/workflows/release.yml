@@ -18,19 +18,42 @@ jobs:
           cp bundles/gdov1-s.txt GarageDoorOpenerGDOv1S/install.txt
           cp bundles/gdov1-s.txt GarageDoorOpenerGDOv1S/update.txt
           cp drivers/konnected-gdov1-s.groovy GarageDoorOpenerGDOv1S/konnected.KonnectedGarageDoorGDOv1S.groovy
-          wget -O GarageDoorOpenerGDOv1S/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/main/ESPHome/ESPHome-API-Library.groovy
+          wget -O GarageDoorOpenerGDOv1S/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/bradsjm/hubitat-public/main/ESPHome/ESPHome-API-Library.groovy
 
-      - name: Zip bundles
+      - name: Build GDOv2-S bundle
+        run:  |
+          ls -la
+          mkdir GarageDoorOpenerGDOv2S
+          cp bundles/gdov2-s.txt GarageDoorOpenerGDOv2S/install.txt
+          cp bundles/gdov2-s.txt GarageDoorOpenerGDOv2S/update.txt
+          cp drivers/konnected-gdov2-s.groovy GarageDoorOpenerGDOv2S/konnected.KonnectedGarageDoorGDOv2S.groovy
+          wget -O GarageDoorOpenerGDOv2S/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/bradsjm/hubitat-public/main/ESPHome/ESPHome-API-Library.groovy
+  
+      - name: Zip GDOv1-S
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
           directory: GarageDoorOpenerGDOv1S
           filename: GarageDoorOpenerGDOv1S.zip
 
-      - name: Upload to Release
+      - name: Zip GDOv2-S
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: 'zip'
+          directory: GarageDoorOpenerGDOv2S
+          filename: GarageDoorOpenerGDOv2S.zip
+  
+      - name: Upload GDOv1-S
         uses: Shopify/upload-to-release@v2.0.0
         with:
           name: GarageDoorOpenerGDOv1S.zip
           path: GarageDoorOpenerGDOv1S/GarageDoorOpenerGDOv1S.zip
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      
+
+      - name: Upload GDOv2-S
+        uses: Shopify/upload-to-release@v2.0.0
+        with:
+          name: GarageDoorOpenerGDOv2S.zip
+          path: GarageDoorOpenerGDOv2S/GarageDoorOpenerGDOv2S.zip
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+        
