@@ -1,0 +1,26 @@
+{
+  "packageName": "Garage Door Opener GDOv2-S",
+  "author": "Konnected Inc.",
+  "version": "1.0",
+  "minimumHEVersion": "0.0",
+  "dateReleased": "2024-03-03",
+  "bundles": [
+    {
+      "id": "948fa4dc-8209-442b-b590-749f0ae899a0",
+      "name": "espHomeApiHelperLibrary",
+      "namespace": "esphome",
+      "location": "https://raw.githubusercontent.com/bradsjm/hubitat-drivers/main/ESPHome/ESPHome-API-Library-Bundle.zip",
+      "required": true
+    }
+  ],
+  "drivers": [
+    {
+      "id": "4fa9e004-24f1-4edb-b559-ba53e82f8cd3",
+      "name": "Konnected Garage Door Opener GDOv2-S",
+      "namespace": "konnected",
+      "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/drivers/konnected-gdov2-s.groovy",
+      "required": true,
+      "version": "1.0"
+    }
+  ]
+}
