@@ -52,6 +52,9 @@ metadata {
         attribute 'openings', 'number'
         attribute 'position', 'number'
         
+        command 'setPosition', [
+            [ name: 'Position*', type: 'NUMBER', description: 'Numerical position 0 (fully closed) to 100 (fully open)' ]
+        ]
         command 'learnOn'
         command 'learnOff'
         command 'restart'
@@ -383,7 +386,6 @@ public void open() {
 
 public void close() {
     if (state.doorKey) {
-        // API library cover command, entity key for the cover is required
         if (logTextEnable) { log.info "${device} close" }
         espHomeCoverCommand(key: state.doorKey as Long, position: 0.0)
     }
@@ -391,9 +393,15 @@ public void close() {
 
 public void stop() {
     if (state.doorKey) {
-        // API library cover command, entity key for the cover is required
-        if (logTextEnable) { log.info "${device} close" }
+        if (logTextEnable) { log.info "${device} stop" }
         espHomeCoverCommand(key: state.doorKey as Long, stop: 1)
+    }
+}
+
+public void setPosition(BigDecimal pos) {
+    if (state.doorKey) {
+        if (logTextEnable) { log.info "${device} set position ${pos}" }
+        espHomeCoverCommand(key: state.doorKey as Long, position: pos / 100)
     }
 }
 
