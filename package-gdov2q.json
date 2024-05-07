@@ -1,0 +1,26 @@
+{
+  "packageName": "Garge Door Opener blaQ (GDOv2-Q)",
+  "author": "Konnected Inc.",
+  "version": "1.0",
+  "minimumHEVersion": "0.0",
+  "dateReleased": "2024-05-06",
+  "bundles": [
+    {
+      "id": "948fa4dc-8209-442b-b590-749f0ae899a0",
+      "name": "espHomeApiHelperLibrary",
+      "namespace": "esphome",
+      "location": "https://raw.githubusercontent.com/bradsjm/hubitat-drivers/main/ESPHome/ESPHome-API-Library-Bundle.zip",
+      "required": true
+    }
+  ],
+  "drivers": [
+    {
+      "id": "5002ddc4-9fb2-44ef-9827-c3cf38d0f097",
+      "name": "Konnected Garage Door Opener GDOv2-Q",
+      "namespace": "konnected",
+      "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/drivers/konnected-gdov2-q.groovy",
+      "required": true,
+      "version": "1.0"
+    }
+  ]
+}

@@ -8,6 +8,13 @@
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/package-gdov1s.json",
       "description": "Integrate the Konnected Garage Door Opener GDOv1-S"
+    },
+    {
+      "id": "01ab08a8-1ad3-44ea-ae68-47482773940e",
+      "name": "Garage Door Opener GDOv2-S",
+      "category": "Integrations",
+      "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/package-gdov2s.json",
+      "description": "Integrate the Konnected Garage Door Opener GDOv2-S"
     }
   ]
 }
