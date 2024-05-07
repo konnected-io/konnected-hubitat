@@ -32,7 +32,7 @@ jobs:
           mkdir GarageDoorOpenerGDOv2Q
           cp bundles/gdov2-q.txt GarageDoorOpenerGDOv2Q/install.txt
           cp bundles/gdov2-q.txt GarageDoorOpenerGDOv2Q/update.txt
-          cp drivers/konnected-gdov2-s.groovy GarageDoorOpenerGDOv2Q/konnected.KonnectedGarageDoorGDOv2Q.groovy
+          cp drivers/konnected-gdov2-q.groovy GarageDoorOpenerGDOv2Q/konnected.KonnectedGarageDoorGDOv2Q.groovy
           wget -O GarageDoorOpenerGDOv2Q/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/bradsjm/hubitat-public/main/ESPHome/ESPHome-API-Library.groovy
   
       - name: Zip GDOv1-S
