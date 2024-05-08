@@ -46,6 +46,8 @@ metadata {
         attribute 'calibratedDistance', 'number'
 
         command 'calibrate'
+        command 'preCloseWarning'
+        command 'restart'
     }
 
     preferences {
@@ -142,13 +144,30 @@ public void calibrate() {
   espHomeCallService('calibrate_open_garage')
 }
 
+public void preCloseWarning() {
+    if (state.preCloseWarning) {
+        if (logTextEnable) { log.info "${device} pre-close warning" }
+        espHomeButtonCommand(key: state.preCloseWarning as Long)
+    }
+}
+
+public void restart() {
+    if (state.restart) {
+        log.info "${device} restart"
+        espHomeButtonCommand(key: state.restart as Long)
+    }
+}
+
+
 // the parse method is invoked by the API library when messages are received
 public void parse(Map message) {
     if (logEnable) { log.debug "ESPHome received: ${message}" }
 
     switch (message.type) {
         case 'device':
-            // Device information
+            if (!device.label && message.macAddress) {
+                device.label = "GDO White " + message.macAddress.replaceAll(':','').toLowerCase().substring(6)
+            }
             break
 
         case 'entity':
@@ -182,6 +201,17 @@ public void parse(Map message) {
                 state['switch'] = message.key
                 return
             }
+
+            if (message.platform == 'button') {
+                if (message.objectId == "restart") {
+                    state['restart'] = message.key
+                }
+                if (message.objectId == "pre-close_warning") {
+                    state['preCloseWarning'] = message.key
+                }
+                return
+            }
+
             break
 
         case 'state':
@@ -189,9 +219,11 @@ public void parse(Map message) {
             // Check if the entity key matches the message entity key received to update device state
             if (state.cover as Long == message.key) {
                 String value
+                String contact
                 switch (message.currentOperation) {
                     case COVER_OPERATION_IDLE:
                         value = message.position > 0 ? 'open' : 'closed'
+                        contact = value
                         break
                     case COVER_OPERATION_IS_OPENING:
                         value = 'opening'
@@ -203,6 +235,7 @@ public void parse(Map message) {
                 if (device.currentValue('door') != value) {
                     descriptionText = "${device} door is ${value}"
                     sendEvent(name: 'door', value: value, type: type, descriptionText: descriptionText)
+                    sendEvent(name: 'contact', value: contact, type: type, descriptionText: descriptionText)
                     if (logTextEnable) { log.info descriptionText }
                 }
                 return
@@ -219,19 +252,24 @@ public void parse(Map message) {
                 return
             }
 
-            if (state.wiredSensor as Long == message.key && message.hasState) {
-              String value = message.state ? 'open' : 'closed'
-              if (device.currentValue('contact') != value) {
-                descriptionText = "Contact is ${value}"
-                sendEvent([
-                  name: 'contact',
-                  value: value, type: type,
-                  descriptionText: descriptionText
-                ])
-                if (logTextEnable) { log.info descriptionText }
-              }
-              return              
-            }
+            // REMOVED because 'contact' track the state of the Garage Door
+            // no longer tracking the wired contact as a separate entity
+            //
+            // TODO: optionally add as a child entity
+            // 
+            // if (state.wiredSensor as Long == message.key && message.hasState) {
+            //   String value = message.state ? 'open' : 'closed'
+            //   if (device.currentValue('contact') != value) {
+            //     descriptionText = "Contact is ${value}"
+            //     sendEvent([
+            //       name: 'contact',
+            //       value: value, type: type,
+            //       descriptionText: descriptionText
+            //     ])
+            //     if (logTextEnable) { log.info descriptionText }
+            //   }
+            //   return              
+            // }
 
             if (state.sensorDistance as Long == message.key && message.hasState) {
               BigDecimal value = message.state.setScale(2, BigDecimal.ROUND_HALF_UP)

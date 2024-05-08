@@ -37,9 +37,10 @@ metadata {
         capability 'Sensor'
         capability 'Refresh'
         capability 'Initialize'
-        capability 'Signal Strength'
-        capability 'Door Control'
-        capability 'Garage Door Control'
+        capability 'SignalStrength'
+        capability 'DoorControl'
+        capability 'GarageDoorControl'
+        capability 'ContactSensor'
         capability 'Switch'
         capability 'Lock'
         capability 'MotionSensor'
@@ -51,6 +52,10 @@ metadata {
         attribute 'uptime', 'number'
         attribute 'openings', 'number'
         attribute 'position', 'number'
+        attribute 'openingDuration', 'number'
+        attribute 'closingDuration', 'number'
+        attribute 'esphomeVersion', 'string'
+        attribute 'securityPlusProtocol', 'string'
         
         command 'setPosition', [
             [ name: 'Position*', type: 'NUMBER', description: 'Numerical position 0 (fully closed) to 100 (fully open)' ]
@@ -59,6 +64,7 @@ metadata {
         command 'learnOff'
         command 'restart'
         command 'stop'
+        command 'preCloseWarning'
     }
 
     preferences {
@@ -149,32 +155,32 @@ private void doParseDevice(Map message) {
 
 private void doParseEntity(Map message) {
     if (message.platform == 'cover') {
-        if (message.name == "Garage Door") {
+        if (message.objectId == "garage_door") {
             state.doorKey = message.key as Long
         }
         return
     }
     if (message.platform == 'binary') {
-        if (message.name == "Motion") {
+        if (message.objectId == "motion") {
             state.motionKey = message.key as Long
             getMotionDevice(message.key)
         }
-        if (message.name == "Obstruction") {
+        if (message.objectId == "obstruction") {
             state.obstructionKey = message.key as Long
             getObstructionDevice(message.key)
         }
-        if (message.name == "Button") {
+        if (message.objectId == "button") {
             state.buttonKey = message.key as Long
             getButtonDevice(message.key)
         }
-        if (message.name == "Motor") {
+        if (message.objectId == "motor") {
             state.motorKey = message.key as Long
         }
         return
     }
 
     if (message.platform == 'light') {
-        if (message.name == "Garage Light") {
+        if (message.objectId == "garage_light") {
             state.lightKey = message.key as Long
             getLightDevice(message.key)
         }
@@ -182,7 +188,7 @@ private void doParseEntity(Map message) {
     }
 
     if (message.platform == 'switch') {
-        if (message.name == "Learn") {
+        if (message.objectId == "learn") {
             state.learnKey = message.key as Long
             getLearnDevice(message.key)
         }
@@ -190,7 +196,7 @@ private void doParseEntity(Map message) {
     }
 
     if (message.platform == 'lock') {
-        if (message.name == "Lock") {
+        if (message.objectId == "lock") {
             state.lockKey = message.key as Long
             getLockDevice(message.key)
         }
@@ -198,21 +204,48 @@ private void doParseEntity(Map message) {
     }
 
     if (message.platform == 'sensor') {
-        if (message.name == "Garage Openings") {
+        if (message.objectId == "garage_openings") {
             state.openingsKey = message.key as Long
         }
         if (message.deviceClass == 'signal_strength' && message.unitOfMeasurement == 'dBm') {
             state.signalStrengthKey = message.key
         }
-        if (message.name == "Uptime") {
+        if (message.objectId == "uptime") {
             state.uptimeKey = message.key as Long
         }
         return
     }
 
+    if (message.platform == 'number') {
+        if (message.objectId == 'opening_duration') {
+            state.openingDurationKey = message.key
+        }
+        if (message.objectId == 'closing_duration') {
+            state.closingDurationKey = message.key
+        }
+        return
+    }
+
+    if (message.platform == 'select') {
+        if (message.objectId == 'security__protocol') {
+            state.securityPlusProtocolKey = message.key
+        }
+        return
+    }
+
+    if (message.platform == 'text') {
+        if (message.objectId == 'esphome_version') {
+            state.esphomeVersionKey = message.key
+        }
+        return
+    }
+
     if (message.platform == 'button') {
-        if (message.name == "Restart") {
+        if (message.objectId == "restart") {
             state.restartKey = message.key
+        }
+        if (message.objectId == "pre-close_warning") {
+            state.preCloseWarningKey = message.key
         }
         return
     }
@@ -226,10 +259,11 @@ private void doParseState(Map message) {
             return
         }
         String value
+        String contact
         switch (message.currentOperation) {
             case COVER_OPERATION_IDLE:
                 value = message.position > 0 ? 'open' : 'closed'
-            contact = value
+                contact = value
             break
             case COVER_OPERATION_IS_OPENING:
                 value = 'opening'
@@ -239,6 +273,7 @@ private void doParseState(Map message) {
             break
         }
         sendDeviceEvent("door", value, type, "Door")
+        sendDeviceEvent("contact", contact, type, "Contact")
         int position = Math.round(message.position * 100) as int
         sendDeviceEvent("position", position, type, "Position")
         return
@@ -276,7 +311,7 @@ private void doParseState(Map message) {
 
     if (state.lockKey as Long == message.key) {
         String value = message.state == 1 ? "locked" : "unlocked"
-        sendDeviceEvent("lock", value, type, "Remotes lock", getLockDevice(message.key))
+        sendDeviceEvent("lock", value, type, "Lock", getLockDevice(message.key))
         return
     }
 
@@ -289,6 +324,33 @@ private void doParseState(Map message) {
     if (state.uptimeKey as Long == message.key) {
         int value = message.state as int
         sendDeviceEvent("uptime", value, type, "Uptime")
+        return
+    }
+
+    if (state.esphomeVersionKey as Long == message.key) {
+        sendDeviceEvent("esphomeVersion", message.state, type, "ESPHome Version")
+        return
+    }
+
+    if (state.securityPlusProtocolKey as Long == message.key) {
+        sendDeviceEvent("securityPlusProtocol", message.state, type, "Security+ Protocol")
+        return
+    }
+
+    if (state.openingDurationKey as Long == message.key) {
+        sendDeviceEvent("openingDuration", message.state, type, "Opening duration")
+        return
+    }
+
+    if (state.openingDurationKey as Long == message.key) {
+        int value = message.state as int
+        sendDeviceEvent("openingDuration", value, type, "Opening duration")
+        return
+    }
+
+    if (state.closingDurationKey as Long == message.key) {
+        int value = message.state as int
+        sendDeviceEvent("closingDuration", value, type, "Closing duration")
         return
     }
 
@@ -402,6 +464,20 @@ public void setPosition(BigDecimal pos) {
     if (state.doorKey) {
         if (logTextEnable) { log.info "${device} set position ${pos}" }
         espHomeCoverCommand(key: state.doorKey as Long, position: pos / 100)
+    }
+}
+
+public void playSound() {
+    if (state.playSoundKey) {
+        if (logTextEnable) { log.info "${device} play sound" }
+        espHomeButtonCommand(key: state.playSoundKey as Long)
+    }
+}
+
+public void preCloseWarning() {
+    if (state.preCloseWarningKey) {
+        if (logTextEnable) { log.info "${device} pre-close warning" }
+        espHomeButtonCommand(key: state.preCloseWarningKey as Long)
     }
 }
 

@@ -1,7 +1,7 @@
 {
   "packageName": "Garge Door Opener blaQ (GDOv2-Q)",
   "author": "Konnected Inc.",
-  "version": "1.1",
+  "version": "1.2",
   "minimumHEVersion": "0.0",
   "dateReleased": "2024-05-06",
   "bundles": [
@@ -20,7 +20,7 @@
       "namespace": "konnected",
       "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/drivers/konnected-gdov2-q.groovy",
       "required": true,
-      "version": "1.1"
+      "version": "1.2"
     }
   ]
 }
