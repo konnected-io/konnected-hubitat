@@ -17,7 +17,7 @@ jobs:
           cp bundles/gdov1-s.txt GarageDoorOpenerGDOv1S/install.txt
           cp bundles/gdov1-s.txt GarageDoorOpenerGDOv1S/update.txt
           cp drivers/konnected-gdov1-s.groovy GarageDoorOpenerGDOv1S/konnected.KonnectedGarageDoorGDOv1S.groovy
-          wget -O GarageDoorOpenerGDOv1S/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/bradsjm/hubitat-public/main/ESPHome/ESPHome-API-Library.groovy
+          wget -O GarageDoorOpenerGDOv1S/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/refs/heads/main/ESPHome/ESPHome-API-Library.groovy
 
       - name: Build GDOv2-S bundle
         run:  |
@@ -25,7 +25,7 @@ jobs:
           cp bundles/gdov2-s.txt GarageDoorOpenerGDOv2S/install.txt
           cp bundles/gdov2-s.txt GarageDoorOpenerGDOv2S/update.txt
           cp drivers/konnected-gdov2-s.groovy GarageDoorOpenerGDOv2S/konnected.KonnectedGarageDoorGDOv2S.groovy
-          wget -O GarageDoorOpenerGDOv2S/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/bradsjm/hubitat-public/main/ESPHome/ESPHome-API-Library.groovy
+          wget -O GarageDoorOpenerGDOv2S/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/refs/heads/main/ESPHome/ESPHome-API-Library.groovy
 
       - name: Build GDOv2-Q bundle
         run:  |
@@ -33,8 +33,16 @@ jobs:
           cp bundles/gdov2-q.txt GarageDoorOpenerGDOv2Q/install.txt
           cp bundles/gdov2-q.txt GarageDoorOpenerGDOv2Q/update.txt
           cp drivers/konnected-gdov2-q.groovy GarageDoorOpenerGDOv2Q/konnected.KonnectedGarageDoorGDOv2Q.groovy
-          wget -O GarageDoorOpenerGDOv2Q/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/bradsjm/hubitat-public/main/ESPHome/ESPHome-API-Library.groovy
-  
+          wget -O GarageDoorOpenerGDOv2Q/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/refs/heads/main/ESPHome/ESPHome-API-Library.groovy
+
+      - name: Build Alarm Panel bundle
+        run:  |
+          mkdir AlarmPanel
+          cp bundles/alarm-panel.txt AlarmPanel/install.txt
+          cp bundles/alarm-panel.txt AlarmPanel/update.txt
+          cp drivers/konnected-alarm-panel.groovy AlarmPanel/konnected.KonnectedAlarmPanel.groovy
+          wget -O AlarmPanel/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/refs/heads/main/ESPHome/ESPHome-API-Library.groovy            
+
       - name: Zip GDOv1-S
         uses: thedoctor0/zip-release@0.7.6
         with:
@@ -55,6 +63,13 @@ jobs:
           type: 'zip'
           directory: GarageDoorOpenerGDOv2Q
           filename: GarageDoorOpenerGDOv2Q.zip
+
+      - name: Zip AlarmPanel
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: 'zip'
+          directory: AlarmPanel
+          filename: AlarmPanel.zip    
   
       - name: Upload GDOv1-S
         uses: Shopify/upload-to-release@v2.0.0
@@ -76,4 +91,11 @@ jobs:
           name: GarageDoorOpenerGDOv2Q.zip
           path: GarageDoorOpenerGDOv2Q/GarageDoorOpenerGDOv2Q.zip
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-                  
+
+      - name: Upload Alarm Panel
+        uses: Shopify/upload-to-release@v2.0.0
+        with:
+          name: AlarmPanel.zip
+          path: AlarmPanel/AlarmPanel.zip
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+                    

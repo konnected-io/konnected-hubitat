@@ -31,7 +31,9 @@ metadata {
         namespace: 'konnected',
         author: 'Konnected Inc.',
         singleThreaded: true,
-        importUrl: 'https://github.com/konnected-io/konnected-hubitat/blob/master/drivers/konnected-gdov2-q.groovy') {
+        importUrl: 'https://github.com/konnected-io/konnected-hubitat/blob/master/drivers/konnected-gdov2-q.groovy'
+    ) 
+    {
 
         capability 'Actuator'
         capability 'Sensor'
