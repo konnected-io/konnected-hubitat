@@ -9,7 +9,7 @@
       "id": "948fa4dc-8209-442b-b590-749f0ae899a0",
       "name": "espHomeApiHelperLibrary",
       "namespace": "esphome",
-      "location": "https://raw.githubusercontent.com/bradsjm/hubitat-drivers/main/ESPHome/ESPHome-API-Library-Bundle.zip",
+      "location": "https://github.com/konnected-io/konnected-hubitat/releases/latest/download/ESPHome-API-Library-Bundle.zip",
       "required": true
     }
   ],

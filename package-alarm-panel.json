@@ -1,0 +1,25 @@
+{
+  "packageName": "Alarm Panel (universal)",
+  "author": "Konnected Inc.",
+  "version": "0.1",
+  "minimumHEVersion": "0.0",
+  "dateReleased": "2024-09-27",
+  "bundles": [
+    {
+      "id": "948fa4dc-8209-442b-b590-749f0ae899a0",
+      "name": "espHomeApiHelperLibrary",
+      "namespace": "esphome",
+      "location": "https://github.com/konnected-io/konnected-hubitat/releases/latest/download/ESPHome-API-Library-Bundle.zip",
+      "required": true
+    }
+  ],
+  "drivers": [
+    {
+      "id": "353b5525-8943-4a2c-9f1b-e51c5265ce33",
+      "name": "",
+      "namespace": "",
+      "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/drivers/konnected-alarm-panel.groovy",
+      "required": true
+    }
+  ]
+}

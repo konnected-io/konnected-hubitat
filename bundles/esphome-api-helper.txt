@@ -1,0 +1,3 @@
+esphome
+espHomeApiHelperLibrary
+library esphome.espHomeApiHelper.groovy

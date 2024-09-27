@@ -11,6 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Build ESPHomeApiHelper bundle
+        run: |
+          mkdir EspHomeApiHelper
+          cp bundles/esphome-api-helper.txt EspHomeApiHelper/install.txt
+          cp bundles/esphome-api-helper.txt EspHomeApiHelper/update.txt
+          wget -O EspHomeApiHelper/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/refs/heads/main/ESPHome/ESPHome-API-Library.groovy          
+
       - name: Build GDOv1-S bundle
         run:  |
           mkdir GarageDoorOpenerGDOv1S
@@ -43,6 +50,13 @@ jobs:
           cp drivers/konnected-alarm-panel.groovy AlarmPanel/konnected.KonnectedAlarmPanel.groovy
           wget -O AlarmPanel/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/refs/heads/main/ESPHome/ESPHome-API-Library.groovy            
 
+      - name: Zip EspHomeApiHelper
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: 'zip'
+          directory: EspHomeApiHelper
+          filename: ESPHome-API-Library-Bundle.zip
+  
       - name: Zip GDOv1-S
         uses: thedoctor0/zip-release@0.7.6
         with:
@@ -70,7 +84,14 @@ jobs:
           type: 'zip'
           directory: AlarmPanel
           filename: AlarmPanel.zip    
-  
+          
+      - name: Upload EspHomeApiHelper
+        uses: Shopify/upload-to-release@v2.0.0
+        with:
+          name: ESPHome-API-Library-Bundle.zip
+          path: EspHomeApiHelper/ESPHome-API-Library-Bundle.zip
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+            
       - name: Upload GDOv1-S
         uses: Shopify/upload-to-release@v2.0.0
         with:
