@@ -21,10 +21,25 @@ metadata {
   }
 
   preferences {
-  	input name: "invertTrigger", type: "bool", title: "Low Level Trigger",
-  	      description: "Select if the attached relay uses a low-level trigger. Default is high-level trigger"
+  	input (
+      name: "invertTrigger", type: "bool", title: "Low Level Trigger",
+  	  description: "Select if the attached relay uses a low-level trigger. Default is high-level trigger"
+      )
+    input (
+      type: "bool",
+			name: "txtEnable",
+			title: "Enable descriptionText logging",
+			required: false,
+			defaultValue: false
+      )
   }
 
+}
+
+def logInfo(msg) {
+	if (txtEnable) {
+		log.info msg
+	}
 }
 
 def updated() {
@@ -38,7 +53,8 @@ def updatePinState(Integer state) {
   } else {
     val = invertTrigger ? "off" : "on"
   }
-  log.info "$device is $val"
+  def descriptionText = "$device is $val"
+  logInfo descriptionText
   sendEvent(name: "switch", value: val, displayed: false)
   if (val == "on") { val = "both" }
   sendEvent(name: "alarm", value: val)
