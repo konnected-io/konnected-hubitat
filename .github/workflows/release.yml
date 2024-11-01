@@ -48,6 +48,7 @@ jobs:
           cp bundles/alarm-panel.txt AlarmPanel/install.txt
           cp bundles/alarm-panel.txt AlarmPanel/update.txt
           cp drivers/konnected-alarm-panel.groovy AlarmPanel/konnected.KonnectedAlarmPanel.groovy
+          cp drivers/konnected-button-trigger.groovy AlarmPanel/konnected.KonnectedButtonTrigger.groovy
           wget -O AlarmPanel/esphome.espHomeApiHelper.groovy https://raw.githubusercontent.com/konnected-io/hubitat-public/refs/heads/main/ESPHome/ESPHome-API-Library.groovy            
 
       - name: Zip EspHomeApiHelper

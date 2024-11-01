@@ -1,7 +1,7 @@
 {
   "packageName": "Alarm Panel (universal)",
   "author": "Konnected Inc.",
-  "version": "0.1",
+  "version": "0.2",
   "minimumHEVersion": "0.0",
   "dateReleased": "2024-09-27",
   "bundles": [
@@ -16,9 +16,16 @@
   "drivers": [
     {
       "id": "353b5525-8943-4a2c-9f1b-e51c5265ce33",
-      "name": "",
-      "namespace": "",
+      "name": "Konnected Alarm Panel",
+      "namespace": "konnected",
       "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/drivers/konnected-alarm-panel.groovy",
+      "required": true
+    },
+    {
+      "id": "00d197f9-42cb-4a8c-b3d3-1257413e520c",
+      "name": "Konnected Button Trigger",
+      "namespace": "konnected",
+      "location": "https://raw.githubusercontent.com/konnected-io/konnected-hubitat/master/drivers/konnected-button-trigger.groovy",
       "required": true
     }
   ]

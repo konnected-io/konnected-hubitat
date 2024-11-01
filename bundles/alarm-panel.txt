@@ -1,4 +1,5 @@
 konnected
 Alarm Panel
 library esphome.espHomeApiHelper.groovy
+driver konnected.KonnectedButtonTrigger.groovy
 driver konnected.KonnectedAlarmPanel.groovy

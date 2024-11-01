@@ -93,6 +93,28 @@ public void refresh() {
     espHomeDeviceInfoRequest()
 }
 
+public void componentOn(cd) {
+    if (logTextEnable) { log.info "${cd.displayName} switch on" }
+    Long key = cd.deviceNetworkId.split('-')[1] as Long
+    espHomeSwitchCommand(key: key, state: 1)
+}
+
+public void componentOff(cd) {
+    if (logTextEnable) { log.info "${cd.displayName} switch off" }
+    Long key = cd.deviceNetworkId.split('-')[1] as Long
+    espHomeSwitchCommand(key: key, state: 0)
+}
+
+public void componentRefresh(cd) {
+    // not implemented
+}
+
+public void componentPush(cd) {
+    if (logTextEnable) { log.info "${cd.displayName} pushed" }
+    Long key = cd.deviceNetworkId.split('-')[1] as Long
+    espHomeButtonCommand(key: key)
+}
+
 // the parse method is invoked by the API library when messages are received
 public void parse(Map message) {
     if (logEnable) { log.debug "ESPHome received: ${message}" }
@@ -157,6 +179,18 @@ private void doParseEntity(Map message) {
         return
     }
 
+    if (message.platform == 'switch') {
+        deviceType = "Switch"
+        getOrCreateDevice(message.key as Long, deviceType, message.name)
+        return
+    }
+
+    if (message.platform == 'button') {
+        deviceType = "Konnected Button Trigger"
+        getOrCreateDevice(message.key as Long, deviceType, message.name)
+        return
+    }
+
 }
 
 private void doParseState(Map message) {
@@ -164,31 +198,40 @@ private void doParseState(Map message) {
 
   // update the state of a child device that matches the key
   def childDevice = getChildDevice("${device.id}-${message.key}")
-  if (childDevice && message.hasState) {
+  if (childDevice) {
     String attr = childDevice.getSupportedAttributes().first()
     String value
     String description
 
     switch (attr) {
         case 'contact':
+            if (!message.hasState) { return }
             value = message.state ? 'open' : 'closed'
             description = 'Contact'
             break
         case 'motion':
+            if (!message.hasState) { return }
             value = message.state ? 'active' : 'inactive'
             description = 'Motion'
             break
         case 'smoke':
+            if (!message.hasState) { return }
             value = message.state ? 'detected' : 'clear'
             description = 'Smoke'
             break
         case 'carbonMonoxide':
+            if (!message.hasState) { return }
             value = message.state ? 'detected' : 'clear'
             description = 'Carbon Monoxide'
             break
         case 'sound':
+            if (!message.hasState) { return }
             value = message.state ? 'detected' : 'not detected'
             description = 'Sound'
+            break
+        case 'switch':
+            value = message.state ? 'on' : 'off'
+            description = 'Switch'
             break
     }
     if (!value) { return }
@@ -240,13 +283,18 @@ private DeviceWrapper getOrCreateDevice(key, deviceType, label = null) {
         return null
     }
     String dni = "${device.id}-${key}" as String
+    String childDeviceType
+    String childDeviceNamespace
     def d = getChildDevice(dni)
     if (!d) {
-        d = addChildDevice(
-            "hubitat",
-            "Generic Component ${deviceType}",
-            dni                            
-        )
+        if (deviceType.startsWith('Konnected')) {
+            childDeviceType = deviceType
+            childDeviceNamespace = 'konnected'
+        } else {
+            childDeviceType = "Generic Component ${deviceType}"
+            childDeviceNamespace = 'hubitat'
+        } 
+        d = addChildDevice(childDeviceNamespace, childDeviceType, dni)
         d.name = label?:deviceType
         d.label = label?:deviceType
     }
