@@ -62,6 +62,8 @@ metadata {
 
 }
 
+import java.math.RoundingMode
+
 public void initialize() {
     // API library command to open socket to device, it will automatically reconnect if needed
     openSocket()
@@ -141,11 +143,11 @@ private void doParseDevice(Map message) {
 }
 
 private void doParseEntity(Map message) {
-    
+    def deviceType
+
     // Add binary sensors as child devices
     if (message.platform == 'binary') {
-        def deviceType
-
+        
         switch (message.deviceClass) {
           case 'motion':
             deviceType = "Motion Sensor"
@@ -176,18 +178,28 @@ private void doParseEntity(Map message) {
         if (message.objectId == "uptime") {
             state.uptimeKey = message.key as Long
         }
+        if (message.deviceClass == 'temperature') {
+            deviceType = 'Temperature Sensor'
+            unit = message.unitOfMeasurement
+        }
+        if (message.deviceClass == 'humidity') {
+            deviceType = 'Humidity Sensor'
+            unit = message.unitOfMeasurement
+        }
+        if (deviceType) {
+            cd = getOrCreateDevice(message.key as Long, deviceType, message.name)
+            if (unit) { state["unit-${message.key}"] = unit }
+        }   
         return
     }
 
     if (message.platform == 'switch') {
-        deviceType = "Switch"
-        getOrCreateDevice(message.key as Long, deviceType, message.name)
+        getOrCreateDevice(message.key as Long, "Switch", message.name)
         return
     }
 
     if (message.platform == 'button') {
-        deviceType = "Konnected Button Trigger"
-        getOrCreateDevice(message.key as Long, deviceType, message.name)
+        getOrCreateDevice(message.key as Long, "Konnected Button Trigger", message.name)
         return
     }
 
@@ -200,8 +212,7 @@ private void doParseState(Map message) {
   def childDevice = getChildDevice("${device.id}-${message.key}")
   if (childDevice) {
     String attr = childDevice.getSupportedAttributes().first()
-    String value
-    String description
+    String value, type, unit, description
 
     switch (attr) {
         case 'contact':
@@ -233,9 +244,20 @@ private void doParseState(Map message) {
             value = message.state ? 'on' : 'off'
             description = 'Switch'
             break
+        case 'temperature':
+            value = message.state.setScale(1, RoundingMode.HALF_UP);
+            description = 'Temperature'
+            unit = state["unit-${message.key}"]
+            break
+        case 'humidity':
+            value = message.state.setScale(1, RoundingMode.HALF_UP);
+            description = 'Humidity'
+            unit = state["unit-${message.key}"]
+            break
+
     }
     if (!value) { return }
-    sendDeviceEvent(attr, value, type, description, childDevice, attr)    
+    sendDeviceEvent(attr, value, type, unit, description, childDevice, attr)    
   }
   
   if (state.signalStrengthKey as Long == message.key && message.hasState) {
@@ -251,16 +273,19 @@ private void doParseState(Map message) {
 
   if (state.uptimeKey as Long == message.key) {
       int value = message.state as int
-      sendDeviceEvent("uptime", value, type, "Uptime")
+      sendDeviceEvent("uptime", value, type, 's', "Uptime")
       return
   }
 
 }
 
 // child device management
-private void sendDeviceEvent(name, value, type, description, child = null, childEventName = null, isStateChange = null) {
-    String descriptionText = "${description} is ${value} (${type})"
-    def event = [name: name, value: value, type: type, descriptionText: descriptionText]
+private void sendDeviceEvent(name, value, type, unit, description, child = null, childEventName = null, isStateChange = null) {
+    String descriptionText = "${description} is ${value}"
+    if (unit) { descriptionText = descriptionText + unit }
+    if (type) { descriptionText = descriptionText + " (${type})" }
+
+    def event = [name: name, value: value, type: type, unit: unit, descriptionText: descriptionText]
     if (isStateChange) {
         event.isStateChange = true
     }
