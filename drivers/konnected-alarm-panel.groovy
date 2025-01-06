@@ -244,6 +244,11 @@ private void doParseState(Map message) {
             value = message.state ? 'on' : 'off'
             description = 'Switch'
             break
+        case 'water':
+            if (!message.hasState) { return }
+            value = message.state ? 'dry' : 'wet'
+            description = 'Moisture'
+            break
         case 'temperature':
             value = message.state.setScale(1, RoundingMode.HALF_UP);
             description = 'Temperature'
