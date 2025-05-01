@@ -246,7 +246,7 @@ private void doParseState(Map message) {
             break
         case 'water':
             if (!message.hasState) { return }
-            value = message.state ? 'dry' : 'wet'
+            value = message.state ? 'wet' : 'dry'
             description = 'Moisture'
             break
         case 'temperature':
