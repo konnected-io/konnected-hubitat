@@ -21,11 +21,26 @@ metadata {
   }
 
   preferences {
-    input name: "pollInterval", type: "number", title: "Polling Interval (minutes)",
+    input (
+      name: "pollInterval", type: "number", title: "Polling Interval (minutes)",
       defaultValue: defaultPollInterval(),
       description: "Frequency of sensor updates"
+      )
+    input (
+      type: "bool",
+				name: "txtEnable",
+				title: "Enable descriptionText logging",
+				required: false,
+				defaultValue: false
+      )
   }
 
+}
+
+def logInfo(msg) {
+	if (txtEnable) {
+		log.info msg
+	}
 }
 
 def updated() {
@@ -45,8 +60,8 @@ def updateStates(states) {
     humidity = new BigDecimal(states.humi)
     sendEvent(name: "humidity", value: humidity.setScale(0, BigDecimal.ROUND_HALF_UP), unit: '%')
   }
-
-  log.info "Temperature: $temperature, Humidity: $humidity"
+  def descriptionText = "Temperature: $temperature, Humidity: $humidity"
+  logInfo descriptionText
 }
 
 def pollInterval() {
