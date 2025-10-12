@@ -211,7 +211,17 @@ private void doParseState(Map message) {
   // update the state of a child device that matches the key
   def childDevice = getChildDevice("${device.id}-${message.key}")
   if (childDevice) {
-    String attr = childDevice.getSupportedAttributes().first()
+    // Define the list of attributes we actually care about
+    def knownAttrs = [
+        'contact', 'motion', 'smoke', 'carbonMonoxide',
+        'sound', 'switch', 'water', 'temperature', 'humidity'
+    ]
+
+    // Find the attribute this child supports from that list
+    def supported = childDevice.getSupportedAttributes()*.name
+    String attr = supported.find { it in knownAttrs }
+    if (!attr) { return }
+
     String value, type, unit, description
 
     switch (attr) {
