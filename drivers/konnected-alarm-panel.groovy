@@ -211,65 +211,62 @@ private void doParseState(Map message) {
   // update the state of a child device that matches the key
   def childDevice = getChildDevice("${device.id}-${message.key}")
   if (childDevice) {
-    // Define the list of attributes we actually care about
-    def knownAttrs = [
-        'contact', 'motion', 'smoke', 'carbonMonoxide',
-        'sound', 'switch', 'water', 'temperature', 'humidity'
-    ]
 
     // Find the attribute this child supports from that list
     def supported = childDevice.getSupportedAttributes()*.name
-    String attr = supported.find { it in knownAttrs }
-    if (!attr) { return }
+    String attr, value, type, unit, description
 
-    String value, type, unit, description
-
-    switch (attr) {
-        case 'contact':
-            if (!message.hasState) { return }
-            value = message.state ? 'open' : 'closed'
-            description = 'Contact'
-            break
-        case 'motion':
-            if (!message.hasState) { return }
-            value = message.state ? 'active' : 'inactive'
-            description = 'Motion'
-            break
-        case 'smoke':
-            if (!message.hasState) { return }
-            value = message.state ? 'detected' : 'clear'
-            description = 'Smoke'
-            break
-        case 'carbonMonoxide':
-            if (!message.hasState) { return }
-            value = message.state ? 'detected' : 'clear'
-            description = 'Carbon Monoxide'
-            break
-        case 'sound':
-            if (!message.hasState) { return }
-            value = message.state ? 'detected' : 'not detected'
-            description = 'Sound'
-            break
-        case 'switch':
-            value = message.state ? 'on' : 'off'
-            description = 'Switch'
-            break
-        case 'water':
-            if (!message.hasState) { return }
-            value = message.state ? 'wet' : 'dry'
-            description = 'Moisture'
-            break
-        case 'temperature':
-            value = message.state.setScale(1, RoundingMode.HALF_UP);
-            description = 'Temperature'
-            unit = state["unit-${message.key}"]
-            break
-        case 'humidity':
-            value = message.state.setScale(1, RoundingMode.HALF_UP);
-            description = 'Humidity'
-            unit = state["unit-${message.key}"]
-            break
-
+    for (attr in supported) {
+        switch (attr) {
+            case 'contact':
+                if (!message.hasState) { return }
+                value = message.state ? 'open' : 'closed'
+                description = 'Contact'
+                break
+            case 'motion':
+                if (!message.hasState) { return }
+                value = message.state ? 'active' : 'inactive'
+                description = 'Motion'
+                break
+            case 'smoke':
+                if (!message.hasState) { return }
+                value = message.state ? 'detected' : 'clear'
+                description = 'Smoke'
+                break
+            case 'carbonMonoxide':
+                if (!message.hasState) { return }
+                value = message.state ? 'detected' : 'clear'
+                description = 'Carbon Monoxide'
+                break
+            case 'sound':
+                if (!message.hasState) { return }
+                value = message.state ? 'detected' : 'not detected'
+                description = 'Sound'
+                break
+            case 'switch':
+                value = message.state ? 'on' : 'off'
+                description = 'Switch'
+                break
+            case 'water':
+                if (!message.hasState) { return }
+                value = message.state ? 'wet' : 'dry'
+                description = 'Moisture'
+                break
+            case 'temperature':
+                value = message.state.setScale(1, RoundingMode.HALF_UP);
+                description = 'Temperature'
+                unit = state["unit-${message.key}"]
+                break
+            case 'humidity':
+                value = message.state.setScale(1, RoundingMode.HALF_UP);
+                description = 'Humidity'
+                unit = state["unit-${message.key}"]
+                break
+            default:
+                continue  // ignore attributes we don’t handle
+        }
+        // Once we’ve found and handled one attribute, stop looping
+        break
     }
     if (!value) { return }
     sendDeviceEvent(attr, value, type, unit, description, childDevice, attr)    
