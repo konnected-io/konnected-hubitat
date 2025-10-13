@@ -212,73 +212,61 @@ private void doParseState(Map message) {
   def childDevice = getChildDevice("${device.id}-${message.key}")
   if (childDevice) {
 
-    // Find the attribute this child supports from that list
-    def supported = childDevice.getSupportedAttributes()*.name
-    String matchedAttr, value, type, unit, description
-
-    for (attr in supported) {
-        switch (attr) {
+    String value, type, unit, description
+    for (attr in childDevice.getSupportedAttributes()*.name) {
+        switch (attr) {            
             case 'contact':
                 if (!message.hasState) { return }
                 value = message.state ? 'open' : 'closed'
                 description = 'Contact'
-                matchedAttr = attr
                 break
             case 'motion':
                 if (!message.hasState) { return }
                 value = message.state ? 'active' : 'inactive'
                 description = 'Motion'
-                matchedAttr = attr
                 break
             case 'smoke':
                 if (!message.hasState) { return }
                 value = message.state ? 'detected' : 'clear'
                 description = 'Smoke'
-                matchedAttr = attr
                 break
             case 'carbonMonoxide':
                 if (!message.hasState) { return }
                 value = message.state ? 'detected' : 'clear'
                 description = 'Carbon Monoxide'
-                matchedAttr = attr
                 break
             case 'sound':
                 if (!message.hasState) { return }
                 value = message.state ? 'detected' : 'not detected'
                 description = 'Sound'
-                matchedAttr = attr
                 break
             case 'switch':
                 value = message.state ? 'on' : 'off'
                 description = 'Switch'
-                matchedAttr = attr
                 break
             case 'water':
                 if (!message.hasState) { return }
                 value = message.state ? 'wet' : 'dry'
                 description = 'Moisture'
-                matchedAttr = attr
                 break
             case 'temperature':
                 value = message.state.setScale(1, RoundingMode.HALF_UP);
                 description = 'Temperature'
                 unit = state["unit-${message.key}"]
-                matchedAttr = attr
                 break
             case 'humidity':
                 value = message.state.setScale(1, RoundingMode.HALF_UP);
                 description = 'Humidity'
                 unit = state["unit-${message.key}"]
-                matchedAttr = attr
                 break
             default:
                 continue  // ignore attributes we don’t handle
         }
-        // Once we’ve found and handled one attribute, stop looping
-        break
+        if (value) { 
+            sendDeviceEvent(attr, value, type, unit, description, childDevice, attr)
+            break // Once we’ve found and handled one attribute, stop looping
+        }
     }
-    if (!value) { return }
-    sendDeviceEvent(matchedAttr, value, type, unit, description, childDevice, matchedAttr)
   }
   
   if (state.signalStrengthKey as Long == message.key && message.hasState) {
