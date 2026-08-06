@@ -20,11 +20,34 @@ metadata {
   }
 
   preferences {
-    input name: "invertTrigger", type: "bool", title: "Low Level Trigger",
-          description: "Select if the attached relay uses a low-level trigger. Default is high-level trigger"
-  input name: "debugOutput", type: "bool", title: "Enable debug logging?", defaultValue: false
+    input (
+      name: "invertTrigger", type: "bool", title: "Low Level Trigger",
+      description: "Select if the attached relay uses a low-level trigger. Default is high-level trigger"
+      )
+  input (
+    name: "debugOutput", type: "bool", title: "Enable debug logging?", defaultValue: false
+    )
+    input (
+      type: "bool",
+				name: "txtEnable",
+				title: "Enable descriptionText logging",
+				required: false,
+				defaultValue: false
+      )
   }
 
+}
+
+def logInfo(msg) {
+	if (txtEnable) {
+		log.info msg
+	}
+}
+
+private logDebug(msg) {
+  if (settings?.debugOutput || settings?.debugOutput == null) {
+    log.debug "$msg"
+  }
 }
 
 def updated() {
@@ -44,13 +67,15 @@ def updatePinState(Integer state) {
 
 def off() {
   def val = invertTrigger ? 1 : 0
-  logDebug "Turning off $device.label (state = $val)"
+  def descriptionText = "Turning off $device.label (state = $val)"
+  logInfo descriptionText
   parent.deviceUpdateDeviceState(device.deviceNetworkId, val)
 }
 
 def on() {
   def val = invertTrigger ? 0 : 1
-  logDebug "Turning on $device.label (state = $val)"
+  def descriptionText = "Turning on $device.label (state = $val)"
+  logInfo descriptionText
   parent.deviceUpdateDeviceState(device.deviceNetworkId, val)
 }
 
@@ -70,10 +95,3 @@ def logsOff(){
   log.warn "debug logging disabled..."
   device.updateSetting("debugOutput",[value:"false",type:"bool"])
 }
-
-private logDebug(msg) {
-  if (settings?.debugOutput || settings?.debugOutput == null) {
-    log.debug "$msg"
-  }
-}
-

@@ -20,12 +20,27 @@ metadata {
   }
 
   preferences {
-    input name: "normalState", type: "enum", title: "Normal State",
-	    options: ["Normally Closed", "Normally Open"],
-      defaultValue: "Normally Closed",
-      description: "By default, the alarm state is triggered when the sensor circuit is open (NC). Select Normally Open (NO) when a closed circuit indicates an alarm."
+    input (
+	name: "normalState", type: "enum", title: "Normal State",
+	options: ["Normally Closed", "Normally Open"],
+      	defaultValue: "Normally Closed",
+      	description: "By default, the alarm state is triggered when the sensor circuit is open (NC). Select Normally Open (NO) when a closed circuit indicates an alarm."
+	)
+  input (
+      	type: "bool",
+	name: "txtEnable",
+	title: "Enable descriptionText logging",
+	required: false,
+	defaultValue: false
+      )  
   }
 
+}
+
+def logInfo(msg) {
+	if (txtEnable) {
+		log.info msg
+	}
 }
 
 def isClosed() {
@@ -40,5 +55,6 @@ def isOpen() {
 def setStatus(state) {
   def stateValue = state == "1" ? isOpen() : isClosed()
   sendEvent(name: "smoke", value: stateValue)
-  log.info "$device.label is $stateValue"
+  def descriptionText = "$device.label is $stateValue"
+  logInfo descriptionText
 }
