@@ -1,0 +1,18 @@
+{
+  "packageName": "Virtual Basic Keypad",
+  "author": "mbarone",
+  "version": "1.0.1",
+  "minimumHEVersion": "2.1.9",
+  "dateReleased": "2020-10-06",
+  "communityLink": "https://community.hubitat.com/t/release-virtual-keypad/51825",
+  "releaseNotes": "These are the changes in this version. Please look at the community thread.",
+  "drivers": [
+    {
+      "id": "bb26c894-ed10-44c6-96c1-38ac0dfab22f",
+      "name": "Virtual Basic Keypad",
+      "namespace": "mbarone",
+      "location": "https://raw.githubusercontent.com/michaelbarone/hubitat/master/drivers/virtualBasicKeypad.groovy",
+      "required": true
+    }
+  ]
+}
