@@ -38,6 +38,11 @@ metadata {
         capability 'SignalStrength'
 
         attribute 'esphomeVersion', 'string'
+        // Required by the ESPHome API library: it writes this attribute and reads it
+        // back to decide whether the device is reachable. Without the declaration
+        // Hubitat drops the event, connection state is never visible, and the library
+        // logs every keepalive ping response as a state change.
+        attribute 'networkStatus', 'enum', [ 'connecting', 'online', 'offline' ]
         attribute 'uptime', 'number'
 
     }
